@@ -1,0 +1,45 @@
+-- v6: include_in_total / is_heading / m3_manual を追加
+CREATE TABLE IF NOT EXISTS customers (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  kana VARCHAR(255) DEFAULT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS estimates (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  estimate_no VARCHAR(64) NOT NULL UNIQUE,
+  customer_name VARCHAR(255) NOT NULL,
+  recipient_company VARCHAR(255) DEFAULT NULL,
+  recipient_person VARCHAR(255) DEFAULT NULL,
+  title VARCHAR(255) DEFAULT NULL,
+  pricing_mode ENUM('unit','lump') NOT NULL DEFAULT 'unit',
+  memo TEXT,
+  subtotal DECIMAL(12,0) NOT NULL DEFAULT 0,
+  tax DECIMAL(12,0) NOT NULL DEFAULT 0,
+  total DECIMAL(12,0) NOT NULL DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS estimate_items (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  estimate_id INT NOT NULL,
+  category VARCHAR(64) NOT NULL,
+  type VARCHAR(64) NOT NULL,
+  description VARCHAR(255) DEFAULT NULL,
+  length_mm INT DEFAULT 0,
+  width_mm INT DEFAULT 0,
+  height_mm INT DEFAULT 0,
+  m3 DECIMAL(10,3) DEFAULT 0,
+  m3_unit_price INT DEFAULT 0,
+  unit_price INT DEFAULT 0,
+  qty INT DEFAULT 1,
+  amount INT DEFAULT 0,
+  note VARCHAR(255) DEFAULT NULL,
+  include_in_total TINYINT(1) NOT NULL DEFAULT 1,
+  is_heading TINYINT(1) NOT NULL DEFAULT 0,
+  m3_manual TINYINT(1) NOT NULL DEFAULT 0,
+  sort_no INT DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_est_item_est FOREIGN KEY (estimate_id) REFERENCES estimates(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
